@@ -1,8 +1,56 @@
+client.on('message', message =>{
+  if(message.content === '#ping'){
+let start = Date.now(); message.channel.send('pong').then(message => { 
+message.edit(`\`\`\`js
+Time taken: ${Date.now() - start} ms
+Discord API: ${client.ping.toFixed(0)} ms\`\`\``);
+  });
+  }
+});
+client.on('message', message => {
+  if(!message.channel.guild) return;
+if(message.content.startsWith('#bc')) {
+if(!message.channel.guild) return message.channel.send('**هذا الأمر فقط للسيرفرات**').then(m => m.delete(5000));
+if(!message.member.hasPermission('ADMINISTRATOR')) return      message.channel.send('**للأسف لا تمتلك صلاحية** `ADMINISTRATOR`' );
+let args = message.content.split(" ").join(" ").slice(2 + prefix.length);
+let copy = "ProBot";
+let request = `Requested By ${message.author.username}`;
+if (!args) return message.reply('**يجب عليك كتابة كلمة او جملة لإرسال البرودكاست**');message.channel.send(`**هل أنت متأكد من إرسالك البرودكاست؟ \nمحتوى البرودكاست:** \` ${args}\``).then(msg => {
+msg.react('✅')
+.then(() => msg.react('❌'))
+.then(() =>msg.react('✅'))
+
+let reaction1Filter = (reaction, user) => reaction.emoji.name === '✅' && user.id === message.author.id;
+let reaction2Filter = (reaction, user) => reaction.emoji.name === '❌' && user.id === message.author.id;
+let reaction1 = msg.createReactionCollector(reaction1Filter, { time: 12000 });
+let reaction2 = msg.createReactionCollector(reaction2Filter, { time: 12000 });
+reaction1.on("collect", r => {
+message.channel.send(`☑ |   ${message.guild.members.size} يتم ارسال البرودكاست الى عضو `).then(m => m.delete(5000));
+message.guild.members.forEach(m => {
+var bc = new
+Discord.RichEmbed()
+.setColor('RANDOM')
+.setTitle(':mega: برودكاست')
+.addField('🔰السيرفر🔰', message.guild.name)
+.addField('🚩المرسل🚩', message.author.username)
+.addField('📜الرسالة📜', args)
+.setThumbnail('https://a.top4top.net/p_1008gqyyd1.png')
+.setFooter(copy, client.user.avatarURL);
+m.send({ embed: bc })
+msg.delete();
+})
+})
+reaction2.on("collect", r => {
+message.channel.send(`**Broadcast Canceled.**`).then(m => m.delete(5000));
+msg.delete();
+})
+})
+}
+})
+
 const ytdl = require("ytdl-core");
 const { Client, Util } = require('discord.js');
 const getYoutubeID = require('get-youtube-id');
-const prefix = "!"
-const client = new Discord.Client(); 
 const fetchVideoInfo = require('youtube-info');
 const YouTube = require('simple-youtube-api');
 const youtube = new YouTube("AIzaSyAdORXg7UZUo7sePv97JyoDqtQVi3Ll0b8");
@@ -17,7 +65,15 @@ npm install simple-youtube-api-
 npm install queue-
 */
 
+client.on('ready', () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`in ${client.guilds.size} servers `)
+    console.log(`[ ] ${client.users.size}`)
+});
+client.on('ready', () => {
+     client.user.setActivity("you",{type: 'WATCHING'});
 
+});
 
 client.on('message', async msg => {
   if (msg.author.bot) return undefined;
@@ -223,14 +279,14 @@ function play(guild, song) {
   serverQueue.textChannel.send({embed : new Discord.RichEmbed()
   .setTitle(`**${ idk.title}**`)
   .setURL( idk.url)
-  .addField('وقت الفيديو :' , `${song.time}`, true)
-  .addField('اسم الروم :' , `${song.best}`, true)
-  .addField('ايدي روم :' , `${song.zg}`, true)
-  .addField('صنع الفيديو في :' , `${ idk.datePublished}`, true)
-  .addField('المشاهدات :' , `${ idk.views}`, true)
-  .addField('لايكات👍 :' , `${ idk.likeCount}`, true)
-  .addField('ديس لايكات👎 :' , `${ idk.dislikeCount}`, true)
-  .addField('الكومنتات :' , `${ idk.commentCount}`, true)
+  .addField('Time The Video :' , `${song.time}`, true)
+  .addField('Channel Name :' , `${song.best}`, true)
+  .addField('Channel ID :' , `${song.zg}`, true)
+  .addField('Video Created at :' , `${ idk.datePublished}`, true)
+  .addField('Views :' , `${ idk.views}`, true)
+  .addField('Like👍 :' , `${ idk.likeCount}`, true)
+  .addField('dislike👎 :' , `${ idk.dislikeCount}`, true)
+  .addField('comments :' , `${ idk.commentCount}`, true)
   .setImage(`${song.eyad}`)
   .setThumbnail('http://cdn.akhbaar24.com/430e061a-f89a-43c7-86d9-82fae5f7c495.jpg')
   .setColor('#ff0000')
@@ -252,14 +308,14 @@ function play(guild, song) {
   love.edit({embed : new Discord.RichEmbed()
   .setTitle(`**${ idk.title}**`)
   .setURL( idk.url)
-  .addField('وقت الفيديو :' , `${song.time}`, true)
-  .addField('اسم روم :' , `${song.best}`, true)
-  .addField('ايدي روم :' , `${song.zg}`, true)
-  .addField('صنع في  :' , `${ idk.datePublished}`, true)
-  .addField('المشاهدات :' , `${ idk.views}`, true)
-  .addField('لايكات👍 :' , `${yyyy[msg.guild.id].like}`, true)
-  .addField('ديس لايكات👎 :' , `${ idk.dislikeCount}`, true)
-  .addField('الكومنتات :' , `${ idk.commentCount}`, true)
+  .addField('Time The Video :' , `${song.time}`, true)
+  .addField('Channel Name :' , `${song.best}`, true)
+  .addField('Channel ID :' , `${song.zg}`, true)
+  .addField('Video Created at :' , `${ idk.datePublished}`, true)
+  .addField('Views :' , `${ idk.views}`, true)
+  .addField('Like👍 :' , `${yyyy[msg.guild.id].like}`, true)
+  .addField('dislike👎 :' , `${ idk.dislikeCount}`, true)
+  .addField('comments :' , `${ idk.commentCount}`, true)
   .setImage(`${song.eyad}`)
   .setThumbnail('http://cdn.akhbaar24.com/430e061a-f89a-43c7-86d9-82fae5f7c495.jpg')
   .setColor('#ff0000')
@@ -272,14 +328,14 @@ function play(guild, song) {
   love.edit({embed : new Discord.RichEmbed()
   .setTitle(`**${ idk.title}**`)
   .setURL( idk.url)
-  .addField('وقت الفيديو :' , `${song.time}`, true)
-  .addField('اسم روم :' , `${song.best}`, true)
-  .addField('ايدي روم :' , `${song.zg}`, true)
-  .addField('الفيديو صنع في :' , `${ idk.datePublished}`, true)
-  .addField('المشاهدات :' , `${ idk.views}`, true)
-  .addField('لايكات👍 :' , `${ idk.likeCount}`, true)
-  .addField('ديسك لايكات👎 :' , `${yyyy[msg.guild.id].dislike}`, true)
-  .addField('كومنتات :' , `${ idk.commentCount}`, true)
+  .addField('Time The Video :' , `${song.time}`, true)
+  .addField('Channel Name :' , `${song.best}`, true)
+  .addField('Channel ID :' , `${song.zg}`, true)
+  .addField('Video Created at :' , `${ idk.datePublished}`, true)
+  .addField('Views :' , `${ idk.views}`, true)
+  .addField('Like👍 :' , `${ idk.likeCount}`, true)
+  .addField('dislike👎 :' , `${yyyy[msg.guild.id].dislike}`, true)
+  .addField('comments :' , `${ idk.commentCount}`, true)
   .setImage(`${song.eyad}`)
   .setThumbnail('http://cdn.akhbaar24.com/430e061a-f89a-43c7-86d9-82fae5f7c495.jpg')
   .setColor('#ff0000')
@@ -290,14 +346,14 @@ function play(guild, song) {
   love.edit({embed : new Discord.RichEmbed()
   .setTitle(`**${ idk.title}**`)
   .setURL( idk.url)
-  .addField('وقت الفيديو :' , `${song.time}`, true)
-  .addField('اسم روم :' , `${song.best}`, true)
-  .addField('ايدي روم:' , `${song.zg}`, true)
-  .addField('صنع في :' , `${ idk.datePublished}`, true)
-  .addField('المشاهدات :' , `${ idk.views}`, true)
-  .addField('لايكات👍 :' , `${ idk.likeCount}`, true)
-  .addField('ديس لايكات👎 :' , `${ idk.dislikeCount}`, true)
-  .addField('الكومنتات :' , `${ idk.commentCount}`, true)
+  .addField('Time The Video :' , `${song.time}`, true)
+  .addField('Channel Name :' , `${song.best}`, true)
+  .addField('Channel ID :' , `${song.zg}`, true)
+  .addField('Video Created at :' , `${ idk.datePublished}`, true)
+  .addField('Views :' , `${ idk.views}`, true)
+  .addField('Like👍 :' , `${ idk.likeCount}`, true)
+  .addField('dislike👎 :' , `${ idk.dislikeCount}`, true)
+  .addField('comments :' , `${ idk.commentCount}`, true)
   .setImage(`${song.eyad}`)
   .setThumbnail('http://cdn.akhbaar24.com/430e061a-f89a-43c7-86d9-82fae5f7c495.jpg')
   .setColor('#ff0000')
